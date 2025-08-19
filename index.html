@@ -1,516 +1,274 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Controle de Vendas</title>
-  <style>
-    :root {
-      --primario: #4caf50;
-      --secundario: #a0e7e5;
-      --fundo-claro: #fefefe;
-      --fundo-escuro: #121212;
-      --texto-claro: #f0f7f7;
-      --texto-escuro: #222;
-      --radius: 8px;
-      --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      --sombra-clara: rgba(0,0,0,0.1);
-      --sombra-escura: rgba(0,0,0,0.7);
-    }
-    body {
-      margin: 0; padding: 0;
-      font-family: var(--font);
-      background-color: var(--fundo-claro);
-      color: var(--texto-escuro);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      transition: background-color 0.3s, color 0.3s;
-      user-select: none;
-    }
-    body.dark {
-      background-color: var(--fundo-escuro);
-      color: var(--texto-claro);
-    }
-    header {
-      background-color: var(--primario);
-      color: var(--texto-claro);
-      padding: 1rem 1.5rem;
-      font-weight: 900;
-      font-size: 1.6rem;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      box-shadow: 0 4px 8px var(--sombra-escura);
-      user-select: text;
-      z-index: 10;
-    }
-    main {
-      max-width: 900px;
-      margin: 1rem auto;
-      padding: 0 1rem 4rem;
-      flex: 1;
-      width: 100%;
-    }
-    h2 {
-      color: var(--primario);
-      margin-bottom: 0.5rem;
-      user-select: text;
-    }
-    label {
-      font-weight: 600;
-      margin-top: 1rem;
-      display: block;
-      user-select: text;
-    }
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: var(--radius);
-      border: 1.5px solid #a8c0c0;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-      background-color: #e9f0f0;
-      color: var(--texto-escuro);
-    }
-    body.dark input[type="text"], 
-    body.dark input[type="number"] {
-      background-color: #2c2c2c;
-      color: var(--texto-claro);
-      border-color: #5aa897;
-    }
-    input:focus {
-      border-color: var(--primario);
-      outline: none;
-      background-color: #d9f0f0;
-      color: var(--texto-escuro);
-    }
-    body.dark input:focus {
-      background-color: #3a6d67;
-      color: var(--texto-claro);
-    }
-    button {
-      margin-top: 15px;
-      background-color: var(--primario);
-      border: none;
-      width: 100%;
-      padding: 12px 0;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--texto-claro);
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
-      box-shadow: 0 4px 8px var(--sombra-clara);
-      letter-spacing: 0.05em;
-    }
-    button:hover:not(:disabled) {
-      background-color: #3b7a70;
-      box-shadow: 0 5px 12px var(--sombra-escura);
-    }
-    button:active:not(:disabled) {
-      background-color: #2e5e54;
-    }
-    button:disabled {
-      background-color: #9ec5c4;
-      cursor: default;
-      box-shadow: none;
-    }
-    .flex-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-    .flex-row > * {
-      flex: 1;
-      min-width: 120px;
-    }
-    #itensList {
-      margin-top: 1rem;
-      border-radius: var(--radius);
-      background-color: #d9e6e6;
-      padding: 1rem;
-      box-shadow: 0 3px 8px rgba(90, 168, 151, 0.3);
-      max-height: 300px;
-      overflow-y: auto;
-      user-select: text;
-    }
-    body.dark #itensList {
-      background-color: #22514c;
-      box-shadow: 0 3px 8px rgba(90, 168, 151, 0.8);
-    }
-    .itemVenda {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 8px;
-      background-color: #f0f7f7;
-      border-radius: var(--radius);
-      margin-bottom: 8px;
-      box-shadow: 0 1px 4px rgba(90, 168, 151, 0.3);
-      user-select: text;
-    }
-    body.dark .itemVenda {
-      background-color: #1e3a37;
-      box-shadow: 0 1px 4px rgba(90, 168, 151, 0.8);
-    }
-    .itemVenda span {
-      font-weight: 600;
-      font-size: 1rem;
-      user-select: text;
-    }
-    .itemVenda button.remover {
-      background: #e05a5a;
-      border: none;
-      border-radius: 50%;
-      width: 26px;
-      height: 26px;
-      font-size: 1.2rem;
-      color: white;
-      cursor: pointer;
-      font-weight: 700;
-      line-height: 1;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-    .itemVenda button.remover:hover {
-      background: #a63636;
-    }
-    #totalDia {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: var(--primario);
-      margin-top: 1rem;
-      text-align: center;
-      user-select: text;
-    }
-    .botaoGrupo {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      flex-wrap: wrap;
-    }
-    .botaoGrupo button {
-      flex: 1;
-      min-width: 120px;
-    }
-    .temaSwitch {
-      position: fixed;
-      bottom: 1rem;
-      right: 1rem;
-      background: var(--primario);
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      cursor: pointer;
-      box-shadow: 0 3px 10px var(--sombra-escura);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--texto-claro);
-      font-size: 1.5rem;
-      user-select: none;
-      transition: background-color 0.3s ease;
-      z-index: 100;
-    }
-    .temaSwitch:hover {
-      background-color: #3b7a70;
-    }
-    footer {
-      padding: 12px 20px;
-      background-color: var(--primario);
-      color: var(--texto-claro);
-      text-align: center;
-      font-style: italic;
-      font-size: 0.9rem;
-      user-select: text;
-      margin-top: auto;
-      box-shadow: 0 -4px 8px var(--sombra-escura);
-    }
-    footer a {
-      color: var(--texto-claro);
-      font-weight: 700;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
-    }
-    /* Scrollbar para webkit */
-    #itensList::-webkit-scrollbar {
-      width: 8px;
-    }
-    #itensList::-webkit-scrollbar-thumb {
-      background-color: var(--primario);
-      border-radius: 8px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Controle de Vendas Avançado</title>
+<style>
+:root {
+  --primario: #4caf50;
+  --secundario: #a0e7e5;
+  --fundo-claro: #fefefe;
+  --fundo-escuro: #121212;
+  --texto-claro: #f0f7f7;
+  --texto-escuro: #222;
+  --radius: 8px;
+  --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --sombra-clara: rgba(0,0,0,0.1);
+  --sombra-escura: rgba(0,0,0,0.7);
+}
+body {margin:0;padding:0;font-family:var(--font);background-color:var(--fundo-claro);color:var(--texto-escuro);min-height:100vh;display:flex;flex-direction:column;transition:background-color 0.3s,color 0.3s;user-select:none;}
+body.dark{background-color:var(--fundo-escuro);color:var(--texto-claro);}
+header{background-color:var(--primario);color:var(--texto-claro);padding:1rem 1.5rem;font-weight:900;font-size:1.6rem;text-align:center;position:sticky;top:0;box-shadow:0 4px 8px var(--sombra-escura);user-select:text;z-index:10;}
+main{max-width:900px;margin:1rem auto;padding:0 1rem 4rem;flex:1;width:100%;}
+h2{color:var(--primario);margin-bottom:0.5rem;user-select:text;}
+label{font-weight:600;margin-top:1rem;display:block;user-select:text;}
+input[type="text"],input[type="number"]{width:100%;padding:8px;margin-top:5px;border-radius:var(--radius);border:1.5px solid #a8c0c0;font-size:1rem;transition:border-color 0.3s ease;background-color:#e9f0f0;color:var(--texto-escuro);}
+body.dark input[type="text"],body.dark input[type="number"]{background-color:#2c2c2c;color:var(--texto-claro);border-color:#5aa897;}
+input:focus{border-color:var(--primario);outline:none;background-color:#d9f0f0;color:var(--texto-escuro);}
+body.dark input:focus{background-color:#3a6d67;color:var(--texto-claro);}
+button{margin-top:15px;background-color:var(--primario);border:none;width:100%;padding:12px 0;font-size:1.1rem;font-weight:700;color:var(--texto-claro);border-radius:var(--radius);cursor:pointer;transition:background-color 0.3s ease;user-select:none;box-shadow:0 4px 8px var(--sombra-clara);letter-spacing:0.05em;}
+button:hover:not(:disabled){background-color:#3b7a70;box-shadow:0 5px 12px var(--sombra-escura);}
+button:active:not(:disabled){background-color:#2e5e54;}
+button:disabled{background-color:#9ec5c4;cursor:default;box-shadow:none;}
+.flex-row{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+.flex-row>*{flex:1;min-width:120px;}
+#itensList{margin-top:1rem;border-radius:var(--radius);background-color:#d9e6e6;padding:1rem;box-shadow:0 3px 8px rgba(90,168,151,0.3);max-height:300px;overflow-y:auto;user-select:text;}
+body.dark #itensList{background-color:#22514c;box-shadow:0 3px 8px rgba(90,168,151,0.8);}
+.itemVenda{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background-color:#f0f7f7;border-radius:var(--radius);margin-bottom:8px;box-shadow:0 1px 4px rgba(90,168,151,0.3);user-select:text;gap:5px;}
+body.dark .itemVenda{background-color:#1e3a37;box-shadow:0 1px 4px rgba(90,168,151,0.8);}
+.itemVenda span{font-weight:600;font-size:1rem;user-select:text;flex:1;}
+.itemVenda button.remover{background:#e05a5a;border:none;border-radius:50%;width:26px;height:26px;font-size:1.2rem;color:white;cursor:pointer;font-weight:700;line-height:1;transition:background-color 0.3s ease;user-select:none;}
+.itemVenda button.remover:hover{background:#a63636;}
+.itemVenda button.editar{background:#ffa500;margin-left:4px;border:none;border-radius:50%;width:26px;height:26px;font-size:1rem;color:white;cursor:pointer;font-weight:700;line-height:1;transition:background-color 0.3s ease;user-select:none;}
+.itemVenda button.editar:hover{background:#cc8400;}
+#totalDia{font-size:1.8rem;font-weight:900;color:var(--primario);margin-top:1rem;text-align:center;user-select:text;}
+.botaoGrupo{display:flex;gap:10px;margin-top:15px;flex-wrap:wrap;}
+.botaoGrupo button{flex:1;min-width:120px;}
+.temaSwitch{position:fixed;bottom:1rem;right:1rem;background:var(--primario);border-radius:50%;width:48px;height:48px;cursor:pointer;box-shadow:0 3px 10px var(--sombra-escura);display:flex;justify-content:center;align-items:center;color:var(--texto-claro);font-size:1.5rem;user-select:none;transition:background-color 0.3s ease;z-index:100;}
+.temaSwitch:hover{background-color:#3b7a70;}
+footer{padding:12px 20px;background-color:var(--primario);color:var(--texto-claro);text-align:center;font-style:italic;font-size:0.9rem;user-select:text;margin-top:auto;box-shadow:0 -4px 8px var(--sombra-escura);}
+footer a{color:var(--texto-claro);font-weight:700;text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+#itensList::-webkit-scrollbar{width:8px;}
+#itensList::-webkit-scrollbar-thumb{background-color:var(--primario);border-radius:8px;}
+.filtro{margin:1rem 0;display:flex;gap:10px;flex-wrap:wrap;}
+.filtro input{flex:1;min-width:150px;}
+</style>
 </head>
 <body>
 
-  <header>
-    Controle de Vendas
-  </header>
+<header>Controle de Vendas Avançado</header>
+<main>
 
-  <main>
-    <h2>Nova Venda</h2>
+<h2>Nova Venda</h2>
+<div class="flex-row">
+<input type="text" id="produto" placeholder="Produto" autocomplete="off" list="produtos-sugestoes"/>
+<datalist id="produtos-sugestoes"></datalist>
+<input type="number" id="quantidade" placeholder="Qtd." min="1" value="1"/>
+<input type="number" id="preco" placeholder="Preço unit. (R$)" step="0.01" min="0"/>
+</div>
+<button id="btnAdicionar">+ Adicionar Item</button>
 
-    <div class="flex-row">
-      <input type="text" id="produto" placeholder="Produto (ex: Pão francês)" autocomplete="off" spellcheck="false" list="produtos-sugestoes" />
-      <datalist id="produtos-sugestoes"></datalist>
-      <input type="number" id="quantidade" placeholder="Qtd." min="1" value="1" />
-      <input type="number" id="preco" placeholder="Preço unit. (R$)" step="0.01" min="0" />
-    </div>
-    <button id="btnAdicionar" onclick="adicionarItem()">+ Adicionar Item</button>
+<div id="itensList" aria-live="polite" aria-label="Lista de itens da venda atual">Nenhum item adicionado.</div>
+<div id="totalDia">Total da Venda: R$ 0,00</div>
 
-    <div id="itensList" aria-live="polite" aria-label="Lista de itens da venda atual">Nenhum item adicionado.</div>
+<div class="botaoGrupo">
+<button id="btnFinalizar" disabled>✅ Finalizar Venda</button>
+<button id="btnPDF">🧾 Exportar Relatório PDF</button>
+<button id="btnLimpar">🗑️ Limpar Todas as Vendas</button>
+</div>
 
-    <div id="totalDia">Total da Venda: R$ 0,00</div>
+<h2>Vendas do Dia</h2>
+<div class="filtro">
+<input type="text" id="buscaProduto" placeholder="Filtrar por produto"/>
+<input type="number" id="minPreco" placeholder="Preço mínimo"/>
+<input type="number" id="maxPreco" placeholder="Preço máximo"/>
+<button id="btnLimparFiltro">Limpar Filtro</button>
+</div>
+<div id="vendasDia" aria-live="polite" aria-label="Lista das vendas do dia">Nenhuma venda realizada hoje.</div>
+<div id="totalGeralDia" style="font-weight:bold;font-size:1.3rem;text-align:center;margin-top:8px;color: var(--primario);user-select:text;">Total Geral: R$ 0,00</div>
 
-    <div class="botaoGrupo">
-      <button onclick="finalizarVenda()" id="btnFinalizar" disabled>✅ Finalizar Venda</button>
-      <button onclick="gerarRelatorioPDF()">🧾 Exportar Relatório PDF</button>
-      <button onclick="limparVendas()">🗑️ Limpar Todas as Vendas</button>
-    </div>
+</main>
+<div class="temaSwitch" title="Alternar tema" role="button" tabindex="0" aria-label="Alternar tema claro/escuro">🌙</div>
 
-    <h2>Vendas do Dia</h2>
-    <div id="vendasDia" aria-live="polite" aria-label="Lista das vendas do dia">Nenhuma venda realizada hoje.</div>
-    <div id="totalGeralDia" style="font-weight:bold; font-size:1.3rem; text-align:center; margin-top:8px; color: var(--primario); user-select: text;">Total Geral: R$ 0,00</div>
-
-  </main>
-
-  <div class="temaSwitch" title="Alternar tema" role="button" tabindex="0" aria-label="Alternar tema claro/escuro">🌙</div>
-
-  <footer>
-    Se curtiu, deixe o seu <strong>incentivo</strong> 🙏 — Desenvolvido por <a href="https://www.instagram.com/ganjabionick8/?next=%2F" target="_blank" rel="noopener">Ganjabionick8</a>
-  </footer>
+<footer>Desenvolvido por <a href="https://www.instagram.com/ganjabionick8/?next=%2F" target="_blank" rel="noopener">Ganjabionick8</a> — Ajude com sua esmola 🙏</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-  // --- Variáveis globais ---
-  let vendaAtual = [];
-  let vendasDoDia = JSON.parse(localStorage.getItem("vendasDoDia") || "[]");
-  let produtosUsados = JSON.parse(localStorage.getItem("produtosUsados") || "[]");
+let vendaAtual = [];
+let vendasDoDia = JSON.parse(localStorage.getItem("vendasDoDia")||"[]");
+let produtosUsados = JSON.parse(localStorage.getItem("produtosUsados")||"[]");
 
-  // --- Elementos ---
-  const produtoInput = document.getElementById("produto");
-  const quantidadeInput = document.getElementById("quantidade");
-  const precoInput = document.getElementById("preco");
-  const itensList = document.getElementById("itensList");
-  const totalDiaEl = document.getElementById("totalDia");
-  const vendasDiaEl = document.getElementById("vendasDia");
-  const totalGeralDiaEl = document.getElementById("totalGeralDia");
-  const btnFinalizar = document.getElementById("btnFinalizar");
-  const temaSwitch = document.querySelector(".temaSwitch");
-  const datalistProdutos = document.getElementById("produtos-sugestoes");
+const produtoInput = document.getElementById("produto");
+const quantidadeInput = document.getElementById("quantidade");
+const precoInput = document.getElementById("preco");
+const itensList = document.getElementById("itensList");
+const totalDiaEl = document.getElementById("totalDia");
+const vendasDiaEl = document.getElementById("vendasDia");
+const totalGeralDiaEl = document.getElementById("totalGeralDia");
+const btnFinalizar = document.getElementById("btnFinalizar");
+const btnAdicionar = document.getElementById("btnAdicionar");
+const btnPDF = document.getElementById("btnPDF");
+const btnLimpar = document.getElementById("btnLimpar");
+const temaSwitch = document.querySelector(".temaSwitch");
+const datalistProdutos = document.getElementById("produtos-sugestoes");
 
-  // --- Tema ---
-  function aplicarTema() {
-    const temaAtual = localStorage.getItem("temaSciFi") || "claro";
-    if(temaAtual === "escuro") {
-      document.body.classList.add("dark");
-      temaSwitch.textContent = "☀️";
-      temaSwitch.title = "Alternar para tema claro";
-    } else {
-      document.body.classList.remove("dark");
-      temaSwitch.textContent = "🌙";
-      temaSwitch.title = "Alternar para tema escuro";
-    }
-  }
-  aplicarTema();
+const buscaProduto = document.getElementById("buscaProduto");
+const minPreco = document.getElementById("minPreco");
+const maxPreco = document.getElementById("maxPreco");
+const btnLimparFiltro = document.getElementById("btnLimparFiltro");
 
-  temaSwitch.addEventListener("click", () => {
-    const novoTema = document.body.classList.contains("dark") ? "claro" : "escuro";
-    localStorage.setItem("temaSciFi", novoTema);
-    aplicarTema();
+const formatarPreco = v=>`R$ ${v.toFixed(2).replace('.',',')}`;
+const salvarLS=(c,v)=>localStorage.setItem(c,JSON.stringify(v));
+const carregarLS=(c,p=[])=>JSON.parse(localStorage.getItem(c)||JSON.stringify(p));
+
+function aplicarTema(){
+  const temaAtual=localStorage.getItem("temaSciFi")||"claro";
+  if(temaAtual==="escuro"){document.body.classList.add("dark");temaSwitch.textContent="☀️";temaSwitch.title="Alternar para tema claro";}
+  else{document.body.classList.remove("dark");temaSwitch.textContent="🌙";temaSwitch.title="Alternar para tema escuro";}
+}
+aplicarTema();
+temaSwitch.addEventListener("click",()=>{const n=document.body.classList.contains("dark")?"claro":"escuro";localStorage.setItem("temaSciFi",n);aplicarTema();});
+temaSwitch.addEventListener("keypress",e=>{if(e.key==="Enter"||e.key===" ") temaSwitch.click();});
+
+function atualizarDatalistProdutos(){
+  datalistProdutos.innerHTML="";
+  produtosUsados.forEach(prod=>{const o=document.createElement("option");o.value=prod;datalistProdutos.appendChild(o);});
+}
+atualizarDatalistProdutos();
+
+function criarItemHTML(item,index){
+  const div=document.createElement("div");
+  div.className="itemVenda";
+  div.innerHTML=`<span>${item.nome}</span>
+    <span>${item.qtd} × ${formatarPreco(item.preco)}</span>
+    <span>${formatarPreco(item.qtd*item.preco)}</span>
+    <button class="editar" aria-label="Editar item ${item.nome}">✏️</button>
+    <button class="remover" aria-label="Remover item ${item.nome}">&times;</button>`;
+  
+  const btnRemover = div.querySelector(".remover");
+  btnRemover.addEventListener("click",()=>{vendaAtual.splice(index,1);atualizarListaItens();});
+
+  const btnEditar = div.querySelector(".editar");
+  btnEditar.addEventListener("click",()=>{
+    const novoQtd = Number(prompt("Quantidade:",item.qtd));
+    const novoPreco = Number(prompt("Preço unitário:",item.preco));
+    if(!isNaN(novoQtd)&&novoQtd>0) item.qtd=novoQtd;
+    if(!isNaN(novoPreco)&&novoPreco>=0) item.preco=novoPreco;
+    atualizarListaItens();
   });
-  temaSwitch.addEventListener("keypress", e => {
-    if(e.key === "Enter" || e.key === " ") temaSwitch.click();
-  });
 
-  // --- Atualiza sugestões do autocomplete ---
-  function atualizarDatalistProdutos() {
-    datalistProdutos.innerHTML = "";
-    produtosUsados.forEach(prod => {
-      const option = document.createElement("option");
-      option.value = prod;
-      datalistProdutos.appendChild(option);
-    });
-  }
-  atualizarDatalistProdutos();
+  return div;
+}
 
-  // --- Atualiza lista de itens da venda atual ---
-  function atualizarListaItens() {
-    itensList.innerHTML = "";
-    if(vendaAtual.length === 0) {
-      itensList.textContent = "Nenhum item adicionado.";
-      btnFinalizar.disabled = true;
-      atualizarTotalVenda();
-      return;
-    }
-    btnFinalizar.disabled = false;
-    vendaAtual.forEach((item, i) => {
-      const div = document.createElement("div");
-      div.className = "itemVenda";
-      div.innerHTML = `
-        <span>${item.nome}</span>
-        <span>${item.qtd} × R$${item.preco.toFixed(2)}</span>
-        <span>R$ ${(item.qtd*item.preco).toFixed(2)}</span>
-        <button aria-label="Remover item ${item.nome}" class="remover" onclick="removerItem(${i})">&times;</button>
-      `;
-      itensList.appendChild(div);
-    });
-    atualizarTotalVenda();
-  }
+function atualizarListaItens(){
+  itensList.innerHTML="";
+  if(vendaAtual.length===0){itensList.textContent="Nenhum item adicionado.";btnFinalizar.disabled=true;atualizarTotalVenda();return;}
+  btnFinalizar.disabled=false;
+  vendaAtual.forEach((i,idx)=>itensList.appendChild(criarItemHTML(i,idx)));
+  atualizarTotalVenda();
+}
 
-  // --- Atualiza total da venda atual ---
-  function atualizarTotalVenda() {
-    const total = vendaAtual.reduce((acc, i) => acc + i.qtd * i.preco, 0);
-    totalDiaEl.textContent = `Total da Venda: R$ ${total.toFixed(2).replace('.', ',')}`;
-  }
+function atualizarTotalVenda(){
+  const total=vendaAtual.reduce((a,i)=>a+i.qtd*i.preco,0);
+  totalDiaEl.textContent=`Total da Venda: ${formatarPreco(total)}`;
+}
 
-  // --- Adiciona item à venda atual ---
-  function adicionarItem() {
-    const nome = produtoInput.value.trim();
-    const qtd = Number(quantidadeInput.value);
-    const preco = Number(precoInput.value);
+function validarItem(nome,qtd,preco){
+  if(!nome) return "Informe o nome do produto.";
+  if(qtd<=0||isNaN(qtd)) return "Quantidade inválida.";
+  if(preco<0||isNaN(preco)) return "Preço inválido.";
+  return null;
+}
 
-    if(!nome) return alert("Informe o nome do produto.");
-    if(qtd <= 0 || isNaN(qtd)) return alert("Quantidade inválida.");
-    if(preco < 0 || isNaN(preco)) return alert("Preço inválido.");
-
-    vendaAtual.push({ nome, qtd, preco });
-
-    // Atualiza produtos usados para autocomplete
-    if(!produtosUsados.includes(nome)) {
-      produtosUsados.push(nome);
-      localStorage.setItem("produtosUsados", JSON.stringify(produtosUsados));
-      atualizarDatalistProdutos();
-    }
-
-    produtoInput.value = "";
-    quantidadeInput.value = 1;
-    precoInput.value = "";
-    produtoInput.focus();
-    atualizarListaItens();
-  }
-
-  // --- Remove item da venda atual ---
-  function removerItem(i) {
-    vendaAtual.splice(i, 1);
-    atualizarListaItens();
-  }
-
-  // --- Finaliza a venda atual e salva ---
-  function finalizarVenda() {
-    if(vendaAtual.length === 0) return alert("Nenhum item para finalizar.");
-    const dataHora = new Date().toLocaleString();
-    const totalVenda = vendaAtual.reduce((acc, i) => acc + i.qtd * i.preco, 0);
-    vendasDoDia.push({ id: Date.now(), dataHora, itens: [...vendaAtual], total: totalVenda });
-    localStorage.setItem("vendasDoDia", JSON.stringify(vendasDoDia));
-    vendaAtual = [];
-    atualizarListaItens();
-    atualizarVendasDoDia();
-    alert("Venda finalizada e salva!");
-  }
-
-  // --- Atualiza a lista de vendas do dia ---
-  function atualizarVendasDoDia() {
-    vendasDiaEl.innerHTML = "";
-    if(vendasDoDia.length === 0) {
-      vendasDiaEl.textContent = "Nenhuma venda realizada hoje.";
-      totalGeralDiaEl.textContent = "Total Geral: R$ 0,00";
-      return;
-    }
-    let totalGeral = 0;
-    vendasDoDia.forEach(venda => {
-      totalGeral += venda.total;
-      const div = document.createElement("div");
-      div.style.marginBottom = "1rem";
-      div.style.borderBottom = "1px dashed var(--primario)";
-      div.style.paddingBottom = "0.3rem";
-      div.innerHTML = `<strong>${venda.dataHora}</strong> - Total: R$ ${venda.total.toFixed(2).replace('.', ',')}
-      <ul style="margin: 0.5rem 0 0 1rem; padding: 0; list-style-type: disc;">
-        ${venda.itens.map(i => `<li>${i.nome} - ${i.qtd} × R$${i.preco.toFixed(2).replace('.', ',')} = R$${(i.qtd*i.preco).toFixed(2).replace('.', ',')}</li>`).join("")}
-      </ul>`;
-      vendasDiaEl.appendChild(div);
-    });
-    totalGeralDiaEl.textContent = `Total Geral: R$ ${totalGeral.toFixed(2).replace('.', ',')}`;
-  }
-
-  // --- Limpa todas as vendas do dia ---
-  function limparVendas() {
-    if(confirm("Tem certeza que deseja limpar TODAS as vendas do dia? Essa ação não pode ser desfeita.")) {
-      vendasDoDia = [];
-      localStorage.removeItem("vendasDoDia");
-      atualizarVendasDoDia();
-      alert("Todas as vendas foram removidas.");
-    }
-  }
-
-  // --- Gera relatório em PDF ---
-  function gerarRelatorioPDF() {
-    if(vendasDoDia.length === 0) return alert("Nenhuma venda para gerar relatório.");
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    let y = 10;
-
-    doc.setFontSize(18);
-    doc.setTextColor(76,175,80);
-    doc.text("Relatório de Vendas", 105, y, null, null, "center");
-    y += 12;
-
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-
-    let totalGeral = 0;
-    vendasDoDia.forEach((venda, idx) => {
-      doc.text(`Venda ${idx + 1}: ${venda.dataHora}`, 10, y);
-      y += 7;
-      venda.itens.forEach(item => {
-        doc.text(`• ${item.nome} - ${item.qtd} × R$${item.preco.toFixed(2)} = R$${(item.qtd*item.preco).toFixed(2)}`, 15, y);
-        y += 6;
-        if(y > 280) {
-          doc.addPage();
-          y = 10;
-        }
-      });
-      doc.text(`Total Venda: R$${venda.total.toFixed(2)}`, 15, y);
-      y += 12;
-      totalGeral += venda.total;
-      if(y > 270) {
-        doc.addPage();
-        y = 10;
-      }
-    });
-
-    doc.setFontSize(14);
-    doc.setFont(undefined, "bold");
-    doc.setTextColor(76,175,80);
-    doc.text(`TOTAL GERAL: R$${totalGeral.toFixed(2)}`, 105, y, null, null, "center");
-
-    // Rodapé com pedido de esmola e créditos em todas as páginas
-    const paginas = doc.internal.getNumberOfPages();
-    for(let i=1; i<=paginas; i++){
-      doc.setPage(i);
-      doc.setFontSize(9);
-      doc.setFont(undefined, "italic");
-      doc.setTextColor(100);
-      doc.text("Desenvolvido por Ganjabionick8 — Ajude com sua esmola 🙏", 10, 290);
-      doc.text(`Página ${i} de ${paginas}`, 190, 290, null, null, "right");
-    }
-
-    doc.save(`Relatorio_Vendas_${new Date().toISOString().slice(0,10)}.pdf`);
-  }
-
-  // --- Inicialização ---
+function adicionarItem(){
+  const nome=produtoInput.value.trim();
+  const qtd=Number(quantidadeInput.value);
+  const preco=Number(precoInput.value);
+  const erro=validarItem(nome,qtd,preco);
+  if(erro) return alert(erro);
+  vendaAtual.push({nome,qtd,preco});
+  if(!produtosUsados.includes(nome)){produtosUsados.push(nome);salvarLS("produtosUsados",produtosUsados);atualizarDatalistProdutos();}
+  produtoInput.value="";quantidadeInput.value=1;precoInput.value="";produtoInput.focus();
   atualizarListaItens();
-  atualizarVendasDoDia();
+}
 
+function atualizarVendasDoDia(){
+  vendasDiaEl.innerHTML="";
+  let totalGeral=0;
+  const filtroNome=buscaProduto.value.toLowerCase();
+  const min=parseFloat(minPreco.value)||0;
+  const max=parseFloat(maxPreco.value)||Infinity;
+
+  const vendasFiltradas = vendasDoDia.map(v=>{
+    const itensFiltrados = v.itens.filter(i=>i.nome.toLowerCase().includes(filtroNome)&&(i.preco>=min && i.preco<=max));
+    return {...v,itens:itensFiltrados,total:itensFiltrados.reduce((a,i)=>a+i.qtd*i.preco,0)};
+  }).filter(v=>v.itens.length>0);
+
+  if(vendasFiltradas.length===0){vendasDiaEl.textContent="Nenhuma venda realizada hoje.";totalGeralDiaEl.textContent="Total Geral: R$ 0,00";return;}
+  
+  vendasFiltradas.forEach(v=>{
+    totalGeral+=v.total;
+    const div=document.createElement("div");
+    div.style.marginBottom="1rem";
+    div.style.borderBottom="1px dashed var(--primario)";
+    div.style.paddingBottom="0.3rem";
+    div.innerHTML=`<strong>${v.dataHora}</strong> - Total: ${formatarPreco(v.total)}
+      <ul style="margin:0.5rem 0 0 1rem;padding:0;list-style-type:disc;">
+        ${v.itens.map(i=>`<li>${i.nome} - ${i.qtd} × ${formatarPreco(i.preco)} = ${formatarPreco(i.qtd*i.preco)}</li>`).join("")}
+      </ul>`;
+    vendasDiaEl.appendChild(div);
+  });
+  totalGeralDiaEl.textContent=`Total Geral: ${formatarPreco(totalGeral)}`;
+}
+
+function finalizarVenda(){
+  if(vendaAtual.length===0) return alert("Nenhum item para finalizar.");
+  const dataHora=new Date().toLocaleString();
+  const totalVenda=vendaAtual.reduce((a,i)=>a+i.qtd*i.preco,0);
+  vendasDoDia.push({id:Date.now(),dataHora,itens:[...vendaAtual],total:totalVenda});
+  salvarLS("vendasDoDia",vendasDoDia);
+  vendaAtual=[];atualizarListaItens();atualizarVendasDoDia();
+  alert("Venda finalizada e salva!");
+}
+
+function limparVendas(){if(confirm("Tem certeza que deseja limpar TODAS as vendas do dia?")){vendasDoDia=[];localStorage.removeItem("vendasDoDia");atualizarVendasDoDia();alert("Todas as vendas foram removidas.");}}
+
+function gerarRelatorioPDF(){
+  if(vendasDoDia.length===0) return alert("Nenhuma venda para gerar relatório.");
+  const { jsPDF } = window.jspdf; const doc=new jsPDF(); let y=10;
+  doc.setFontSize(18); doc.setTextColor(76,175,80); doc.text("Relatório de Vendas",105,y,null,null,"center"); y+=12;
+  doc.setFontSize(12); doc.setTextColor(0);
+  let totalGeral=0;
+  vendasDoDia.forEach((venda,idx)=>{
+    doc.text(`Venda ${idx+1}: ${venda.dataHora}`,10,y); y+=7;
+    venda.itens.forEach(item=>{
+      doc.text(`• ${item.nome} - ${item.qtd} × ${formatarPreco(item.preco)} = ${formatarPreco(item.qtd*item.preco)}`,15,y); y+=6;
+      if(y>280){doc.addPage();y=10;}
+    });
+    doc.text(`Total Venda: ${formatarPreco(venda.total)}`,15,y); y+=12; totalGeral+=venda.total;
+    if(y>270){doc.addPage();y=10;}
+  });
+  doc.setFontSize(14); doc.setFont(undefined,"bold"); doc.setTextColor(76,175,80); doc.text(`TOTAL GERAL: ${formatarPreco(totalGeral)}`,105,y,null,null,"center");
+  const paginas=doc.internal.getNumberOfPages();
+  for(let i=1;i<=paginas;i++){doc.setPage(i);doc.setFontSize(9);doc.setFont(undefined,"italic");doc.setTextColor(100);doc.text("Desenvolvido por Ganjabionick8 — Ajude com sua esmola 🙏",10,290);doc.text(`Página ${i} de ${paginas}`,190,290,null,null,"right");}
+  doc.save(`Relatorio_Vendas_${new Date().toISOString().slice(0,10)}.pdf`);
+}
+
+// --- Eventos ---
+btnAdicionar.addEventListener("click",adicionarItem);
+btnFinalizar.addEventListener("click",finalizarVenda);
+btnLimpar.addEventListener("click",limparVendas);
+btnPDF.addEventListener("click",gerarRelatorioPDF);
+buscaProduto.addEventListener("input",atualizarVendasDoDia);
+minPreco.addEventListener("input",atualizarVendasDoDia);
+maxPreco.addEventListener("input",atualizarVendasDoDia);
+btnLimparFiltro.addEventListener("click",()=>{buscaProduto.value="";minPreco.value="";maxPreco.value="";atualizarVendasDoDia();});
+
+// Inicialização
+atualizarListaItens();
+atualizarVendasDoDia();
 </script>
-
 </body>
 </html>
